@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | CarePulse Hospital</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-2 px-3">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center text-white" href="admin-dashboard.html">
+        <span class="brand-icon"><i class="bi bi-hospital"></i></span>
+        <span>CarePulse <span class="badge bg-primary fs-6 ms-2">Admin Portal</span></span>
+      </a>
+
+      <div class="d-flex align-items-center ms-auto">
+        <div class="text-white text-end me-3 d-none d-sm-block">
+          <div class="small fw-bold" id="adminUserFullName">Administrator</div>
+          <div class="text-secondary small" style="font-size: 0.75rem;" id="adminRoleBadge">ROLE_ADMIN</div>
+        </div>
+        <button onclick="API.logout()" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right me-1"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="nav flex-column nav-pills" id="adminTabs" role="tablist">
+        <button class="nav-link active text-start" data-bs-toggle="pill" data-bs-target="#tab-overview">
+          <i class="bi bi-speedometer2"></i> Overview
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-departments">
+          <i class="bi bi-building"></i> Departments
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-doctors">
+          <i class="bi bi-heart-pulse"></i> Doctors
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-patients">
+          <i class="bi bi-people"></i> Patients
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-staff" id="staffManagementTab">
+          <i class="bi bi-person-workspace"></i> Staff
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-appointments">
+          <i class="bi bi-calendar-check"></i> Appointments
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-billing">
+          <i class="bi bi-cash-stack"></i> Billing & Finance
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-content">
+      <div class="tab-content" id="adminTabContent">
+
+        <!-- TAB 1: OVERVIEW -->
+        <div class="tab-pane fade show active" id="tab-overview">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Administrative Overview</h3>
+              <p class="text-muted small mb-0">Real-time health statistics, patient visits, and revenue flow</p>
+            </div>
+            <button onclick="loadDashboardData()" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-arrow-clockwise me-1"></i> Refresh Stats
+            </button>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+              <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="text-muted small fw-semibold">Total Doctors</span>
+                    <h3 class="fw-bold my-1 text-dark" id="statDoctors">0</h3>
+                    <small class="text-success"><i class="bi bi-arrow-up-right me-1"></i>Active Staff</small>
+                  </div>
+                  <div class="stat-icon primary"><i class="bi bi-heart-pulse"></i></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="text-muted small fw-semibold">Registered Patients</span>
+                    <h3 class="fw-bold my-1 text-dark" id="statPatients">0</h3>
+                    <small class="text-primary"><i class="bi bi-person-check me-1"></i>In Directory</small>
+                  </div>
+                  <div class="stat-icon success"><i class="bi bi-people"></i></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="text-muted small fw-semibold">Appointments</span>
+                    <h3 class="fw-bold my-1 text-dark" id="statAppointments">0</h3>
+                    <small class="text-warning" id="statPendingAppts">0 Pending</small>
+                  </div>
+                  <div class="stat-icon warning"><i class="bi bi-calendar2-event"></i></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="text-muted small fw-semibold">Revenue Collected</span>
+                    <h3 class="fw-bold my-1 text-dark" id="statRevenue">$0.00</h3>
+                    <small class="text-danger" id="statPendingRevenue">Pending: $0.00</small>
+                  </div>
+                  <div class="stat-icon info"><i class="bi bi-wallet2"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions and Recent Appointments -->
+          <div class="row g-4">
+            <div class="col-lg-12">
+              <div class="table-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold mb-0">Recent Hospital Appointments</h5>
+                  <button class="btn btn-sm btn-outline-primary" onclick="showTab('tab-appointments')">View All</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0" id="overviewApptsTable">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor / Specialty</th>
+                        <th>Date & Time</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="overviewApptsBody">
+                      <tr><td colspan="6" class="text-center text-muted py-4">Loading appointments...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: DEPARTMENTS -->
+        <div class="tab-pane fade" id="tab-departments">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Departments</h3>
+              <p class="text-muted small mb-0">Manage hospital clinics, heads of departments, and clinical units</p>
+            </div>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDeptModal">
+              <i class="bi bi-plus-lg me-1"></i> Add Department
+            </button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Head Doctor</th>
+                    <th>Location</th>
+                    <th>Contact Phone</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="departmentsTableBody">
+                  <tr><td colspan="7" class="text-center py-4">Loading departments...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: DOCTORS -->
+        <div class="tab-pane fade" id="tab-doctors">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Doctors Directory</h3>
+              <p class="text-muted small mb-0">Manage clinical specialists, fees, qualifications, and schedules</p>
+            </div>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDoctorModal">
+              <i class="bi bi-person-plus me-1"></i> Add Doctor
+            </button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Doctor Name</th>
+                    <th>Department</th>
+                    <th>Specialization</th>
+                    <th>Fee</th>
+                    <th>Schedule</th>
+                    <th>Email / Phone</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="doctorsTableBody">
+                  <tr><td colspan="7" class="text-center py-4">Loading doctors...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: PATIENTS -->
+        <div class="tab-pane fade" id="tab-patients">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Patient Registry</h3>
+              <p class="text-muted small mb-0">Registered hospital patients, emergency contacts, and history</p>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Blood Group</th>
+                    <th>Gender / DOB</th>
+                    <th>Emergency Contact</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="patientsTableBody">
+                  <tr><td colspan="7" class="text-center py-4">Loading patients...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: STAFF -->
+        <div class="tab-pane fade" id="tab-staff">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Staff Management</h3>
+              <p class="text-muted small mb-0">Nursing supervisors, administrative personnel, and lab technicians</p>
+            </div>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+              <i class="bi bi-person-plus me-1"></i> Add Staff Member
+            </button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Department</th>
+                    <th>Shift</th>
+                    <th>Salary</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="staffTableBody">
+                  <tr><td colspan="7" class="text-center py-4">Loading staff...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: APPOINTMENTS -->
+        <div class="tab-pane fade" id="tab-appointments">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">All Appointments</h3>
+              <p class="text-muted small mb-0">Review booking schedules, confirm or cancel appointments</p>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Reason / Symptoms</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="allApptsTableBody">
+                  <tr><td colspan="7" class="text-center py-4">Loading appointments...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 7: BILLING -->
+        <div class="tab-pane fade" id="tab-billing">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Hospital Invoices & Billing</h3>
+              <p class="text-muted small mb-0">Generate hospital bills, track pending balances, and record payments</p>
+            </div>
+            <a href="billing.html" class="btn btn-primary btn-sm">
+              <i class="bi bi-receipt me-1"></i> Open Full Billing Console
+            </a>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Total ($)</th>
+                    <th>Paid ($)</th>
+                    <th>Balance ($)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminBillsTableBody">
+                  <tr><td colspan="8" class="text-center py-4">Loading billing records...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal: Add Department -->
+  <div class="modal fade" id="addDeptModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addDeptForm">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Add New Department</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Department Name *</label>
+              <input type="text" class="form-control" id="deptName" required placeholder="e.g. Oncology">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Head Doctor</label>
+              <input type="text" class="form-control" id="deptHead" placeholder="e.g. Dr. Robert Chen">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Contact Phone</label>
+              <input type="text" class="form-control" id="deptPhone" placeholder="+1 (555) 010-1234">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Building & Floor</label>
+              <input type="text" class="form-control" id="deptLocation" placeholder="e.g. Building B, 4th Floor">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Description</label>
+              <textarea class="form-control" id="deptDesc" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Department</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Doctor -->
+  <div class="modal fade" id="addDoctorModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="addDoctorForm">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Add Doctor & Specialist Account</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Doctor Full Name *</label>
+                <input type="text" class="form-control" id="docFullName" required placeholder="e.g. Dr. Alexander Fleming">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Specialization *</label>
+                <input type="text" class="form-control" id="docSpecialization" required placeholder="e.g. Cardiothoracic Surgeon">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Department *</label>
+                <select class="form-select" id="docDepartmentSelect" required>
+                  <option value="">Select Department...</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Consultation Fee ($) *</label>
+                <input type="number" step="0.01" class="form-control" id="docFee" required placeholder="150.00">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Login Username *</label>
+                <input type="text" class="form-control" id="docUsername" required placeholder="e.g. dr.fleming">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Login Password *</label>
+                <input type="password" class="form-control" id="docPassword" required placeholder="doctor123">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Email *</label>
+                <input type="email" class="form-control" id="docEmail" required placeholder="fleming@hospital.com">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Phone Number</label>
+                <input type="text" class="form-control" id="docPhone" placeholder="+1 (555) 010-9999">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Available Days</label>
+                <input type="text" class="form-control" id="docDays" placeholder="Monday, Wednesday, Friday">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Available Hours</label>
+                <input type="text" class="form-control" id="docTime" placeholder="09:00 AM - 04:00 PM">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Qualifications</label>
+                <input type="text" class="form-control" id="docQual" placeholder="MD, FACS - Oxford Medical">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Years of Experience</label>
+                <input type="number" class="form-control" id="docExp" placeholder="10">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Doctor</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Staff -->
+  <div class="modal fade" id="addStaffModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addStaffForm">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Add Staff Member</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Full Name *</label>
+                <input type="text" class="form-control" id="staffFullName" required placeholder="Jane Doe">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Designation *</label>
+                <input type="text" class="form-control" id="staffDesignation" required placeholder="Head Nurse / Admin">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Department</label>
+                <select class="form-select" id="staffDeptSelect">
+                  <option value="">Select Department...</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Shift Timing</label>
+                <input type="text" class="form-control" id="staffShift" placeholder="Morning / Night Shift">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Monthly Salary ($)</label>
+                <input type="number" step="0.01" class="form-control" id="staffSalary" placeholder="45000">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Phone</label>
+                <input type="text" class="form-control" id="staffPhone" placeholder="+1 555-010-3333">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Username *</label>
+                <input type="text" class="form-control" id="staffUsername" required placeholder="staff.user">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Password *</label>
+                <input type="password" class="form-control" id="staffPassword" required placeholder="staff123">
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold">Email *</label>
+                <input type="email" class="form-control" id="staffEmail" required placeholder="staff@hospital.com">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Staff Member</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // Security check: only ADMIN or STAFF
+    API.checkAuth(['ROLE_ADMIN', 'ROLE_STAFF']);
+
+    const user = API.getUser();
+    if (user) {
+      document.getElementById('adminUserFullName').textContent = user.fullName || user.username;
+      document.getElementById('adminRoleBadge').textContent = user.role;
+      if (user.role !== 'ROLE_ADMIN') {
+        document.getElementById('staffManagementTab').classList.add('d-none');
+      }
+    }
+
+    function showTab(tabId) {
+      const triggerEl = document.querySelector(`button[data-bs-target="#${tabId}"]`);
+      if (triggerEl) bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+    }
+
+    // ==========================================
+    // DATA LOADING FUNCTIONS
+    // ==========================================
+    let globalDepartments = [];
+
+    async function loadDashboardData() {
+      try {
+        const stats = await API.getDashboardStats();
+        document.getElementById('statDoctors').textContent = stats.totalDoctors || 0;
+        document.getElementById('statPatients').textContent = stats.totalPatients || 0;
+        document.getElementById('statAppointments').textContent = stats.totalAppointments || 0;
+        document.getElementById('statPendingAppts').textContent = `${stats.pendingAppointments || 0} Pending`;
+        document.getElementById('statRevenue').textContent = formatCurrency(stats.totalRevenue);
+        document.getElementById('statPendingRevenue').textContent = `Pending: ${formatCurrency(stats.pendingRevenue)}`;
+      } catch (e) {
+        console.error('Error loading stats:', e);
+      }
+
+      loadDepartments();
+      loadDoctors();
+      loadPatients();
+      if (user?.role === 'ROLE_ADMIN') {
+        loadStaff();
+      }
+      loadAppointments();
+      loadBills();
+    }
+
+    async function loadDepartments() {
+      try {
+        globalDepartments = await API.getDepartments();
+        const tbody = document.getElementById('departmentsTableBody');
+        const deptSelect = document.getElementById('docDepartmentSelect');
+        const staffDeptSelect = document.getElementById('staffDeptSelect');
+
+        // Populate dropdowns
+        deptSelect.innerHTML = '<option value="">Select Department...</option>' +
+          globalDepartments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        staffDeptSelect.innerHTML = '<option value="">Select Department...</option>' +
+          globalDepartments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+
+        if (globalDepartments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No departments found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = globalDepartments.map(d => `
+          <tr>
+            <td><span class="badge bg-light text-dark border">#${d.id}</span></td>
+            <td class="fw-bold text-primary">${d.name}</td>
+            <td class="small text-muted">${d.description || 'N/A'}</td>
+            <td>${d.headDoctor || 'N/A'}</td>
+            <td><span class="badge bg-secondary-subtle text-secondary">${d.buildingLocation || 'Main Wing'}</span></td>
+            <td>${d.contactPhone || 'N/A'}</td>
+            <td>
+              <button onclick="deleteDepartment(${d.id})" class="btn btn-outline-danger btn-sm py-0 px-2" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadDoctors() {
+      try {
+        const doctors = await API.getDoctors();
+        const tbody = document.getElementById('doctorsTableBody');
+        if (doctors.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No doctors registered yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = doctors.map(doc => `
+          <tr>
+            <td>
+              <div class="fw-bold">${doc.fullName || doc.username}</div>
+              <small class="text-muted">${doc.qualification || 'Physician'}</small>
+            </td>
+            <td><span class="badge bg-primary-subtle text-primary">${doc.departmentName || 'General'}</span></td>
+            <td>${doc.specialization}</td>
+            <td class="fw-semibold text-success">${formatCurrency(doc.consultationFee)}</td>
+            <td class="small text-muted">${doc.availableDays || 'Weekdays'}<br><span class="text-dark">${doc.availableTime || ''}</span></td>
+            <td class="small">${doc.email || 'N/A'}<br>${doc.phone || ''}</td>
+            <td>
+              <button onclick="deleteDoctor(${doc.id})" class="btn btn-outline-danger btn-sm py-0 px-2" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadPatients() {
+      try {
+        const patients = await API.getPatients();
+        const tbody = document.getElementById('patientsTableBody');
+        if (patients.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No patients registered.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = patients.map(p => `
+          <tr>
+            <td><span class="badge bg-light text-dark border">#${p.id}</span></td>
+            <td>
+              <div class="fw-bold">${p.fullName || p.username}</div>
+              <small class="text-muted">${p.phone || p.email || ''}</small>
+            </td>
+            <td><span class="badge bg-danger text-white">${p.bloodGroup || 'N/A'}</span></td>
+            <td>${p.gender || 'N/A'} / ${p.dateOfBirth ? formatDate(p.dateOfBirth) : 'N/A'}</td>
+            <td class="small">${p.emergencyContact || 'N/A'}</td>
+            <td class="small text-muted">${p.address || 'N/A'}</td>
+            <td>
+              <button onclick="alert('Medical History: ${p.medicalHistory || 'None registered'}')" class="btn btn-outline-info btn-sm py-0 px-2" title="Medical History">
+                <i class="bi bi-clipboard2-pulse"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadStaff() {
+      if (user?.role !== 'ROLE_ADMIN') return;
+      try {
+        const staff = await API.getStaff();
+        const tbody = document.getElementById('staffTableBody');
+        if (staff.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No staff members found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = staff.map(s => `
+          <tr>
+            <td class="fw-bold">${s.fullName || s.username}</td>
+            <td><span class="badge bg-info-subtle text-dark">${s.designation}</span></td>
+            <td>${s.departmentName || 'General Staff'}</td>
+            <td class="small text-muted">${s.shiftTime || 'General Shift'}</td>
+            <td class="fw-semibold">${formatCurrency(s.salary)}</td>
+            <td class="small">${s.phone || s.email}</td>
+            <td>
+              <button onclick="deleteStaff(${s.id})" class="btn btn-outline-danger btn-sm py-0 px-2" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadAppointments() {
+      try {
+        const appointments = await API.getAppointments();
+        const overviewBody = document.getElementById('overviewApptsBody');
+        const allBody = document.getElementById('allApptsTableBody');
+
+        if (appointments.length === 0) {
+          overviewBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No appointments found.</td></tr>';
+          allBody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No appointments found.</td></tr>';
+          return;
+        }
+
+        const renderRows = (limit = null) => {
+          const list = limit ? appointments.slice(0, limit) : appointments;
+          return list.map(a => {
+            const statusClass = a.status === 'CONFIRMED' ? 'badge-confirmed' :
+              a.status === 'COMPLETED' ? 'badge-completed' :
+              a.status === 'CANCELLED' ? 'badge-cancelled' : 'badge-pending';
+            
+            return `
+              <tr>
+                <td><span class="badge bg-light text-dark border">#${a.id}</span></td>
+                <td>
+                  <div class="fw-semibold">${a.patient?.user?.fullName || 'Patient'}</div>
+                  <small class="text-muted">${a.patient?.user?.phone || ''}</small>
+                </td>
+                <td>
+                  <div>${a.doctor?.user?.fullName || 'Doctor'}</div>
+                  <small class="text-primary">${a.doctor?.specialization || ''}</small>
+                </td>
+                <td>
+                  <strong>${formatDate(a.appointmentDate)}</strong><br>
+                  <small class="text-muted"><i class="bi bi-clock me-1"></i>${a.appointmentTime}</small>
+                </td>
+                <td class="small text-muted" style="max-width: 220px;">${a.reason || 'Routine checkup'}</td>
+                <td><span class="badge-status ${statusClass}">${a.status}</span></td>
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-2" data-bs-toggle="dropdown">Action</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="#" onclick="updateApptStatus(${a.id}, 'CONFIRMED')"><i class="bi bi-check2 text-success me-2"></i>Confirm</a></li>
+                      <li><a class="dropdown-item" href="#" onclick="updateApptStatus(${a.id}, 'COMPLETED')"><i class="bi bi-check2-all text-primary me-2"></i>Complete</a></li>
+                      <li><a class="dropdown-item" href="#" onclick="updateApptStatus(${a.id}, 'CANCELLED')"><i class="bi bi-x-circle text-danger me-2"></i>Cancel</a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        };
+
+        overviewBody.innerHTML = renderRows(5);
+        allBody.innerHTML = renderRows();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadBills() {
+      try {
+        const bills = await API.getBills();
+        const tbody = document.getElementById('adminBillsTableBody');
+        if (bills.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No billing records found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = bills.map(b => {
+          const statusBadge = b.paymentStatus === 'PAID' ? 'badge-paid' :
+            b.paymentStatus === 'PARTIALLY_PAID' ? 'badge-partially-paid' : 'badge-pending';
+
+          return `
+            <tr>
+              <td><span class="badge bg-light text-primary border">${b.billNumber}</span></td>
+              <td>${b.patient?.user?.fullName || 'Patient'}</td>
+              <td>${formatDate(b.billDate)}</td>
+              <td class="fw-bold">${formatCurrency(b.totalAmount)}</td>
+              <td class="text-success fw-semibold">${formatCurrency(b.paidAmount)}</td>
+              <td class="text-danger fw-semibold">${formatCurrency(b.balanceAmount)}</td>
+              <td><span class="badge-status ${statusBadge}">${b.paymentStatus}</span></td>
+              <td>
+                <a href="billing.html" class="btn btn-sm btn-outline-primary py-0 px-2">Manage</a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ==========================================
+    // ACTION HANDLERS
+    // ==========================================
+    async function updateApptStatus(id, status) {
+      try {
+        await API.updateAppointmentStatus(id, status);
+        showToast(`Appointment #${id} marked as ${status}`, 'success');
+        loadAppointments();
+        loadDashboardData();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    }
+
+    async function deleteDepartment(id) {
+      if (!confirm('Are you sure you want to delete this department?')) return;
+      try {
+        await API.deleteDepartment(id);
+        showToast('Department deleted successfully', 'success');
+        loadDepartments();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    }
+
+    async function deleteDoctor(id) {
+      if (!confirm('Are you sure you want to delete this doctor?')) return;
+      try {
+        await API.deleteDoctor(id);
+        showToast('Doctor deleted', 'success');
+        loadDoctors();
+        loadDashboardData();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    }
+
+    async function deleteStaff(id) {
+      if (!confirm('Are you sure you want to delete this staff member?')) return;
+      try {
+        await API.deleteStaff(id);
+        showToast('Staff deleted', 'success');
+        loadStaff();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    }
+
+    // Modal Forms
+    document.getElementById('addDeptForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await API.createDepartment({
+          name: document.getElementById('deptName').value,
+          headDoctor: document.getElementById('deptHead').value,
+          contactPhone: document.getElementById('deptPhone').value,
+          buildingLocation: document.getElementById('deptLocation').value,
+          description: document.getElementById('deptDesc').value
+        });
+        showToast('Department created successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addDeptModal')).hide();
+        document.getElementById('addDeptForm').reset();
+        loadDepartments();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    });
+
+    document.getElementById('addDoctorForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await API.createDoctor({
+          fullName: document.getElementById('docFullName').value,
+          specialization: document.getElementById('docSpecialization').value,
+          departmentId: parseInt(document.getElementById('docDepartmentSelect').value),
+          consultationFee: parseFloat(document.getElementById('docFee').value),
+          username: document.getElementById('docUsername').value,
+          password: document.getElementById('docPassword').value,
+          email: document.getElementById('docEmail').value,
+          phone: document.getElementById('docPhone').value,
+          availableDays: document.getElementById('docDays').value,
+          availableTime: document.getElementById('docTime').value,
+          qualification: document.getElementById('docQual').value,
+          experienceYears: parseInt(document.getElementById('docExp').value || 0)
+        });
+        showToast('Doctor profile created successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addDoctorModal')).hide();
+        document.getElementById('addDoctorForm').reset();
+        loadDoctors();
+        loadDashboardData();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    });
+
+    document.getElementById('addStaffForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await API.createStaff({
+          fullName: document.getElementById('staffFullName').value,
+          designation: document.getElementById('staffDesignation').value,
+          departmentId: document.getElementById('staffDeptSelect').value ? parseInt(document.getElementById('staffDeptSelect').value) : null,
+          shiftTime: document.getElementById('staffShift').value,
+          salary: parseFloat(document.getElementById('staffSalary').value || 0),
+          phone: document.getElementById('staffPhone').value,
+          username: document.getElementById('staffUsername').value,
+          password: document.getElementById('staffPassword').value,
+          email: document.getElementById('staffEmail').value
+        });
+        showToast('Staff member added!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addStaffModal')).hide();
+        document.getElementById('addStaffForm').reset();
+        loadStaff();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    });
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', loadDashboardData);
+  </script>
+</body>
+</html>

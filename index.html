@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarePulse | Modern Hospital Management System</title>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-primary text-white py-1 small">
+    <div class="container d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-clock me-1"></i> 24/7 Emergency Care & Ambulance Available</span>
+      <div>
+        <span class="me-3"><i class="bi bi-telephone-fill me-1"></i> Emergency Hotline: +1 (800) 555-CARE</span>
+        <span><i class="bi bi-geo-alt-fill me-1"></i> 100 Health Sciences Blvd, Medical District</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-3">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center text-primary" href="index.html">
+        <span class="brand-icon"><i class="bi bi-hospital"></i></span>
+        <span>CarePulse <span class="text-secondary fw-normal">Hospital</span></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#departments">Departments</a></li>
+          <li class="nav-item"><a class="nav-link" href="#doctors">Doctors</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item ms-lg-3" id="navAuthLinks">
+            <a href="login.html" class="btn btn-outline-primary me-2 px-3">Log In</a>
+            <a href="register.html" class="btn btn-primary px-3 shadow-sm">Patient Register</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section text-center text-lg-start">
+    <div class="container">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7">
+          <span class="badge bg-light text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+            <i class="bi bi-shield-check me-1"></i> World-Class Compassionate Healthcare
+          </span>
+          <h1 class="display-4 fw-bold text-white mb-3">
+            Advanced Clinical Care, Personalized For You.
+          </h1>
+          <p class="lead text-light mb-4 pe-lg-4" style="opacity: 0.9;">
+            Experience state-of-the-art medical diagnostics, renowned medical specialists, and seamless online appointment scheduling with instant record tracking.
+          </p>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="login.html" class="btn btn-light btn-lg px-4 fw-semibold text-primary shadow">
+              <i class="bi bi-calendar-check me-2"></i> Book Appointment
+            </a>
+            <a href="login.html" class="btn btn-outline-light btn-lg px-4 fw-semibold">
+              <i class="bi bi-person-badge me-2"></i> Staff & Doctor Portal
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-5 text-center">
+          <div class="card border-0 shadow-lg p-4 bg-white text-dark rounded-4">
+            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+              <div class="text-start">
+                <h5 class="fw-bold mb-1 text-primary">Live Hospital Stats</h5>
+                <small class="text-muted">Real-time medical infrastructure</small>
+              </div>
+              <span class="badge bg-success-subtle text-success border border-success px-2 py-1">Operational</span>
+            </div>
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 text-start">
+                  <div class="text-primary fs-3 fw-bold" id="heroDoctorCount">50+</div>
+                  <div class="small text-muted fw-semibold">Certified Doctors</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 text-start">
+                  <div class="text-success fs-3 fw-bold" id="heroDeptCount">12</div>
+                  <div class="small text-muted fw-semibold">Specialized Depts</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 text-start">
+                  <div class="text-info fs-3 fw-bold">24/7</div>
+                  <div class="small text-muted fw-semibold">ICU & Emergency</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 text-start">
+                  <div class="text-warning fs-3 fw-bold">99.8%</div>
+                  <div class="small text-muted fw-semibold">Satisfaction Rate</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Key Features Grid -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container py-4">
+      <div class="row g-4 text-center">
+        <div class="col-md-4">
+          <div class="stat-card h-100 text-start">
+            <div class="stat-icon primary mb-3">
+              <i class="bi bi-calendar2-heart"></i>
+            </div>
+            <h5 class="fw-bold text-dark">Easy Appointment Booking</h5>
+            <p class="text-muted small">Choose your preferred doctor, specialization, date, and convenient slot in just seconds.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card h-100 text-start">
+            <div class="stat-icon success mb-3">
+              <i class="bi bi-file-earmark-medical"></i>
+            </div>
+            <h5 class="fw-bold text-dark">Digital Records & Rx</h5>
+            <p class="text-muted small">Access your diagnosis, electronic prescriptions, and treatment history anywhere, anytime.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card h-100 text-start">
+            <div class="stat-icon warning mb-3">
+              <i class="bi bi-credit-card-2-front"></i>
+            </div>
+            <h5 class="fw-bold text-dark">Transparent Digital Billing</h5>
+            <p class="text-muted small">View breakdown of consultation, pharmacy, and room fees with instant payment receipts.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Departments Section -->
+  <section id="departments" class="py-5 bg-light">
+    <div class="container py-4">
+      <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold mb-2">Our Clinical Departments</span>
+        <h2 class="fw-bold text-dark">Specialized Centers of Excellence</h2>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+          From cardiovascular surgery to advanced neurodiagnostics, our multidisciplinary clinics provide world-class clinical expertise.
+        </p>
+      </div>
+
+      <div class="row g-4" id="departmentsContainer">
+        <!-- Dynamically loaded via API or fallback cards -->
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="stat-icon primary me-3"><i class="bi bi-heart-pulse"></i></div>
+              <h5 class="fw-bold mb-0">Cardiology</h5>
+            </div>
+            <p class="text-muted small">Comprehensive care for coronary diseases, heart failure, echocardiograms, and angioplasty.</p>
+            <div class="mt-auto pt-2 border-top small text-muted">
+              <i class="bi bi-person-fill text-primary me-1"></i> Head: Dr. Sarah Jenkins
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="stat-icon info me-3"><i class="bi bi-diagram-3"></i></div>
+              <h5 class="fw-bold mb-0">Neurology</h5>
+            </div>
+            <p class="text-muted small">Specialized neurological treatment for strokes, epilepsy, spinal cord, and brain health.</p>
+            <div class="mt-auto pt-2 border-top small text-muted">
+              <i class="bi bi-person-fill text-primary me-1"></i> Head: Dr. Robert Chen
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="stat-icon success me-3"><i class="bi bi-bandaid"></i></div>
+              <h5 class="fw-bold mb-0">Pediatrics</h5>
+            </div>
+            <p class="text-muted small">Specialized infant, child, and adolescent healthcare, immunizations, and developmental wellness.</p>
+            <div class="mt-auto pt-2 border-top small text-muted">
+              <i class="bi bi-person-fill text-primary me-1"></i> Head: Dr. Emily Watson
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="stat-icon warning me-3"><i class="bi bi-bone"></i></div>
+              <h5 class="fw-bold mb-0">Orthopedics</h5>
+            </div>
+            <p class="text-muted small">Care for bone, joint, and sports injuries, with rehabilitation and surgical services.</p>
+            <div class="mt-auto pt-2 border-top small text-muted">
+              <i class="bi bi-person-fill text-primary me-1"></i> Head: Dr. Michael Rivera
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="stat-icon info me-3"><i class="bi bi-ribbon"></i></div>
+              <h5 class="fw-bold mb-0">Oncology</h5>
+            </div>
+            <p class="text-muted small">Coordinated cancer screening, diagnosis, treatment planning, and supportive care.</p>
+            <div class="mt-auto pt-2 border-top small text-muted">
+              <i class="bi bi-person-fill text-primary me-1"></i> Head: Dr. Aisha Patel
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="stat-icon danger me-3"><i class="bi bi-activity"></i></div>
+              <h5 class="fw-bold mb-0">Emergency Medicine</h5>
+            </div>
+            <p class="text-muted small">24-hour assessment and urgent treatment for illness, injury, and other emergencies.</p>
+            <div class="mt-auto pt-2 border-top small text-muted">
+              <i class="bi bi-person-fill text-primary me-1"></i> Head: Dr. James Wilson
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Doctors Section -->
+  <section id="doctors" class="py-5 bg-white border-bottom">
+    <div class="container py-4">
+      <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold mb-2">Our Specialists</span>
+        <h2 class="fw-bold text-dark">Meet Our Medical Team</h2>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+          Board-certified physicians and surgeons committed to patient-first treatment.
+        </p>
+      </div>
+
+      <div class="row g-4" id="doctorsContainer">
+        <!-- Dynamically rendered or fallback -->
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 80px; height: 80px; font-size: 2.2rem;">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <h5 class="fw-bold mb-1">Dr. Sarah Jenkins</h5>
+            <p class="text-primary fw-medium small mb-2">Cardiology • MD, Harvard</p>
+            <p class="text-muted small">Available Mon, Wed, Fri (09:00 AM - 04:00 PM)</p>
+            <div class="mt-3">
+              <a href="login.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">Consult Doctor</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 80px; height: 80px; font-size: 2.2rem;">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <h5 class="fw-bold mb-1">Dr. Robert Chen</h5>
+            <p class="text-primary fw-medium small mb-2">Neurology • MD, PhD, Johns Hopkins</p>
+            <p class="text-muted small">Available Tue, Thu, Sat (10:00 AM - 05:00 PM)</p>
+            <div class="mt-3">
+              <a href="login.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">Consult Doctor</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 80px; height: 80px; font-size: 2.2rem;">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <h5 class="fw-bold mb-1">Dr. Emily Watson</h5>
+            <p class="text-primary fw-medium small mb-2">Pediatrics • MD, Stanford</p>
+            <p class="text-muted small">Available Mon, Tue, Thu, Fri (08:30 AM - 03:30 PM)</p>
+            <div class="mt-3">
+              <a href="login.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">Consult Doctor</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 80px; height: 80px; font-size: 2.2rem;">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <h5 class="fw-bold mb-1">Dr. Michael Rivera</h5>
+            <p class="text-primary fw-medium small mb-2">Orthopedics • MD, FAAOS</p>
+            <p class="text-muted small">Available Mon, Tue, Thu (08:00 AM - 03:00 PM)</p>
+            <div class="mt-3">
+              <a href="login.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">Consult Doctor</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 80px; height: 80px; font-size: 2.2rem;">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <h5 class="fw-bold mb-1">Dr. Aisha Patel</h5>
+            <p class="text-primary fw-medium small mb-2">Oncology • MD, MS</p>
+            <p class="text-muted small">Available Mon, Wed, Fri (09:00 AM - 04:00 PM)</p>
+            <div class="mt-3">
+              <a href="login.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">Consult Doctor</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <div class="mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 80px; height: 80px; font-size: 2.2rem;">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <h5 class="fw-bold mb-1">Dr. James Wilson</h5>
+            <p class="text-primary fw-medium small mb-2">Emergency Medicine • MD, FACEP</p>
+            <p class="text-muted small">Available Tue, Thu, Sat (10:00 AM - 06:00 PM)</p>
+            <div class="mt-3">
+              <a href="login.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">Consult Doctor</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Emergency Banner -->
+  <section class="py-5 bg-primary text-white text-center">
+    <div class="container py-2">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-3">Facing a Medical Emergency?</h2>
+          <p class="lead mb-4" style="opacity: 0.95;">
+            Our rapid response trauma center and intensive care teams operate 24 hours a day, 7 days a week.
+          </p>
+          <a href="tel:+18005552273" class="btn btn-warning btn-lg px-4 fw-bold shadow">
+            <i class="bi bi-telephone-outbound-fill me-2"></i> Call Ambulance Hotline
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-5">
+    <div class="container">
+      <div class="row g-4 mb-4">
+        <div class="col-lg-4 col-md-6">
+          <h5 class="fw-bold text-white mb-3 d-flex align-items-center">
+            <span class="brand-icon me-2"><i class="bi bi-hospital"></i></span> CarePulse Hospital
+          </h5>
+          <p class="text-secondary small">
+            Dedicated to providing patient-centered, technology-driven healthcare excellence with secure medical data management and certified clinical specialists.
+          </p>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6 class="fw-bold text-uppercase text-light mb-3">Portals</h6>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="login.html" class="text-secondary text-decoration-none">Admin Login</a></li>
+            <li class="mb-2"><a href="login.html" class="text-secondary text-decoration-none">Doctor Portal</a></li>
+            <li class="mb-2"><a href="login.html" class="text-secondary text-decoration-none">Patient Login</a></li>
+            <li class="mb-2"><a href="register.html" class="text-secondary text-decoration-none">New Patient Registration</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h6 class="fw-bold text-uppercase text-light mb-3">Departments</h6>
+          <ul class="list-unstyled small text-secondary">
+            <li class="mb-2">Cardiology & Heart Care</li>
+            <li class="mb-2">Neurology & Brain Health</li>
+            <li class="mb-2">Pediatrics & Neonatal Care</li>
+            <li class="mb-2">Orthopedics & Sports Medicine</li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h6 class="fw-bold text-uppercase text-light mb-3">Contact</h6>
+          <p class="small text-secondary mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i> 100 Health Sciences Blvd</p>
+          <p class="small text-secondary mb-2"><i class="bi bi-envelope me-2 text-primary"></i> support@carepulse.hospital</p>
+          <p class="small text-secondary"><i class="bi bi-phone me-2 text-primary"></i> +1 (800) 555-CARE</p>
+        </div>
+      </div>
+      <hr class="border-secondary">
+      <div class="d-flex flex-wrap justify-content-between align-items-center small text-secondary">
+        <span>&copy; 2026 CarePulse Hospital Management System. All rights reserved.</span>
+        <span>Built with Spring Boot & Full Stack Java</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- API Client -->
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if user is logged in, adjust navbar
+      if (API.isAuthenticated()) {
+        const user = API.getUser();
+        const navAuth = document.getElementById('navAuthLinks');
+        let dashboardLink = 'patient-dashboard.html';
+        if (user.role === 'ROLE_ADMIN' || user.role === 'ROLE_STAFF') dashboardLink = 'admin-dashboard.html';
+        else if (user.role === 'ROLE_DOCTOR') dashboardLink = 'doctor-dashboard.html';
+
+        navAuth.innerHTML = `
+          <span class="text-muted me-2 small">Hi, <strong>${user.fullName || user.username}</strong></span>
+          <a href="${dashboardLink}" class="btn btn-primary btn-sm me-2">Dashboard</a>
+          <button onclick="API.logout()" class="btn btn-outline-danger btn-sm">Logout</button>
+        `;
+      }
+
+      // Load live departments
+      try {
+        const departments = await API.getDepartments();
+        if (departments && departments.length > 0) {
+          document.getElementById('heroDeptCount').textContent = departments.length;
+          const container = document.getElementById('departmentsContainer');
+          container.innerHTML = departments.map(d => `
+            <div class="col-lg-4 col-md-6">
+              <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="stat-icon primary me-3"><i class="bi bi-heart-pulse"></i></div>
+                  <h5 class="fw-bold mb-0">${d.name}</h5>
+                </div>
+                <p class="text-muted small">${d.description || 'Specialized clinical services and modern diagnostic care.'}</p>
+                <div class="mt-auto pt-2 border-top small text-muted">
+                  <i class="bi bi-person-fill text-primary me-1"></i> Head: ${d.headDoctor || 'Dr. Medical Officer'}
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.log('Using static fallback for departments');
+      }
+
+      // Load live doctors
+      try {
+        const doctors = await API.getDoctors();
+        if (doctors && doctors.length > 0) {
+          document.getElementById('heroDoctorCount').textContent = doctors.length + '+';
+          const container = document.getElementById('doctorsContainer');
+          container.innerHTML = doctors.map(doc => `
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 80px; height: 80px; font-size: 2.2rem;">
+                  <i class="bi bi-person-circle"></i>
+                </div>
+                <h5 class="fw-bold mb-1">${doc.fullName || doc.username}</h5>
+                <p class="text-primary fw-medium small mb-2">${doc.specialization} • ${doc.departmentName || 'Specialist'}</p>
+                <p class="text-muted small">${doc.availableDays || 'Mon - Fri'} (${doc.availableTime || '09:00 AM - 05:00 PM'})</p>
+                <div class="mt-3">
+                  <a href="login.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">Consult Doctor ($${doc.consultationFee || 100})</a>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.log('Using static fallback for doctors');
+      }
+    });
+  </script>
+</body>
+</html>

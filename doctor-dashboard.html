@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Portal | CarePulse Hospital</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top py-2 px-3">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center text-white" href="doctor-dashboard.html">
+        <span class="brand-icon bg-white text-primary"><i class="bi bi-hospital"></i></span>
+        <span>CarePulse <span class="badge bg-light text-primary fs-6 ms-2">Doctor Portal</span></span>
+      </a>
+
+      <div class="d-flex align-items-center ms-auto">
+        <div class="text-white text-end me-3 d-none d-sm-block">
+          <div class="small fw-bold" id="docNavName">Dr. Medical Specialist</div>
+          <div class="text-light small" style="font-size: 0.75rem;" id="docNavDept">Department Specialist</div>
+        </div>
+        <button onclick="API.logout()" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right me-1"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="nav flex-column nav-pills" id="doctorTabs" role="tablist">
+        <button class="nav-link active text-start" data-bs-toggle="pill" data-bs-target="#tab-doc-appointments">
+          <i class="bi bi-calendar-check"></i> My Appointments
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-doc-prescriptions">
+          <i class="bi bi-file-earmark-medical"></i> Prescriptions
+        </button>
+        <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-doc-profile">
+          <i class="bi bi-person-badge"></i> My Practice Profile
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-content">
+      <div class="tab-content" id="doctorTabContent">
+
+        <!-- TAB 1: APPOINTMENTS -->
+        <div class="tab-pane fade show active" id="tab-doc-appointments">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Appointment Queue</h3>
+              <p class="text-muted small mb-0">Review assigned patient consultations, confirm slots, and provide treatment</p>
+            </div>
+            <button onclick="loadDoctorAppointments()" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-arrow-clockwise me-1"></i> Refresh Queue
+            </button>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="stat-card">
+                <span class="text-muted small fw-semibold">Pending Review</span>
+                <h3 class="fw-bold my-1 text-warning" id="docPendingCount">0</h3>
+                <small class="text-muted">Awaiting confirmation</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card">
+                <span class="text-muted small fw-semibold">Confirmed Appointments</span>
+                <h3 class="fw-bold my-1 text-primary" id="docConfirmedCount">0</h3>
+                <small class="text-muted">Ready for consultation</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card">
+                <span class="text-muted small fw-semibold">Completed Consultations</span>
+                <h3 class="fw-bold my-1 text-success" id="docCompletedCount">0</h3>
+                <small class="text-muted">Care delivered</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Appt #</th>
+                    <th>Patient Name</th>
+                    <th>Date & Time</th>
+                    <th>Symptoms / Reason</th>
+                    <th>Status</th>
+                    <th>Doctor Notes</th>
+                    <th>Clinical Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="docApptsTableBody">
+                  <tr><td colspan="7" class="text-center text-muted py-4">Loading your appointments...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: PRESCRIPTIONS -->
+        <div class="tab-pane fade" id="tab-doc-prescriptions">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h3 class="fw-bold mb-1">Issued Prescriptions</h3>
+              <p class="text-muted small mb-0">Review medication history and digital prescriptions you have prescribed</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openNewPrescriptionModal()">
+              <i class="bi bi-plus-lg me-1"></i> Write New Prescription
+            </button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Rx ID</th>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Diagnosis</th>
+                    <th>Medicines & Dosages</th>
+                    <th>Instructions</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="docPrescriptionsTableBody">
+                  <tr><td colspan="7" class="text-center text-muted py-4">Loading prescriptions...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PRACTICE PROFILE -->
+        <div class="tab-pane fade" id="tab-doc-profile">
+          <div class="mb-4">
+            <h3 class="fw-bold mb-1">My Practice Profile</h3>
+            <p class="text-muted small mb-0">View your clinical specialization, available consultation hours, and fee details</p>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="d-flex align-items-center mb-4">
+                  <div class="stat-icon primary me-3" style="width: 60px; height: 60px; font-size: 2rem;">
+                    <i class="bi bi-person-badge"></i>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold mb-1" id="profileFullName">Doctor Name</h5>
+                    <p class="text-primary mb-0 small" id="profileSpecialization">Specialty</p>
+                  </div>
+                </div>
+
+                <div class="list-group list-group-flush small">
+                  <div class="list-group-item d-flex justify-content-between py-2 px-0">
+                    <span class="text-muted">Department</span>
+                    <span class="fw-semibold text-dark" id="profileDepartment">Cardiology</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between py-2 px-0">
+                    <span class="text-muted">Consultation Fee</span>
+                    <span class="fw-bold text-success" id="profileFee">$150.00</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between py-2 px-0">
+                    <span class="text-muted">Available Days</span>
+                    <span class="fw-semibold" id="profileDays">Mon, Wed, Fri</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between py-2 px-0">
+                    <span class="text-muted">Available Hours</span>
+                    <span class="fw-semibold" id="profileTime">09:00 AM - 04:00 PM</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between py-2 px-0">
+                    <span class="text-muted">Qualifications</span>
+                    <span class="fw-semibold" id="profileQual">MD, FACC</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Write Prescription -->
+  <div class="modal fade" id="addPrescriptionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="prescriptionForm">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">
+              <i class="bi bi-file-earmark-medical text-primary me-2"></i> Issue Electronic Prescription (Rx)
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="rxApptId">
+            
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Patient *</label>
+                <select class="form-select" id="rxPatientSelect" required>
+                  <option value="">Select Patient...</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Prescription Date *</label>
+                <input type="date" class="form-control" id="rxDate" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Clinical Diagnosis *</label>
+              <input type="text" class="form-control" id="rxDiagnosis" required placeholder="e.g. Acute Bronchitis / Stage 1 Hypertension">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Prescribed Medicines & Dosage *</label>
+              <textarea class="form-control" id="rxMedicines" rows="4" required placeholder="1. Amoxicillin 500mg - 1 capsule tid x 7 days&#10;2. Paracetamol 650mg - 1 tab prn for fever&#10;3. Cough Expectorant 10ml - twice daily"></textarea>
+              <small class="text-muted">Specify medicine name, dosage strength, frequency, and duration.</small>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Doctor Instructions / Dietary Advice</label>
+              <textarea class="form-control" id="rxInstructions" rows="2" placeholder="Drink plenty of fluids, rest for 3 days, follow-up if symptoms persist."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Sign & Issue Prescription</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: View Prescription Detail / Printable -->
+  <div class="modal fade" id="viewRxModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Prescription Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body printable-area" id="viewRxBody">
+          <!-- Dynamic Content -->
+        </div>
+        <div class="modal-footer no-print">
+          <button type="button" onclick="window.print()" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-printer me-1"></i> Print Rx
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    API.checkAuth(['ROLE_DOCTOR', 'ROLE_ADMIN']);
+
+    let currentDoctor = null;
+    let doctorAppointments = [];
+    let allPatients = [];
+
+    async function initDoctorDashboard() {
+      const user = API.getUser();
+      // Find doctor profile for this user
+      try {
+        const doctors = await API.getDoctors();
+        currentDoctor = doctors.find(d => d.userId === user.id || d.username === user.username) || null;
+
+        if (currentDoctor) {
+          document.getElementById('docNavName').textContent = currentDoctor.fullName || user.fullName;
+          document.getElementById('docNavDept').textContent = currentDoctor.specialization + ' (' + (currentDoctor.departmentName || 'General') + ')';
+
+          document.getElementById('profileFullName').textContent = currentDoctor.fullName;
+          document.getElementById('profileSpecialization').textContent = currentDoctor.specialization;
+          document.getElementById('profileDepartment').textContent = currentDoctor.departmentName || 'General';
+          document.getElementById('profileFee').textContent = formatCurrency(currentDoctor.consultationFee);
+          document.getElementById('profileDays').textContent = currentDoctor.availableDays || 'Mon - Fri';
+          document.getElementById('profileTime').textContent = currentDoctor.availableTime || '09:00 AM - 04:00 PM';
+          document.getElementById('profileQual').textContent = currentDoctor.qualification || 'MD';
+        }
+
+        allPatients = await API.getPatients();
+        const rxSelect = document.getElementById('rxPatientSelect');
+        rxSelect.innerHTML = '<option value="">Select Patient...</option>' +
+          allPatients.map(p => `<option value="${p.id}">${p.fullName || p.username} (ID: #${p.id})</option>`).join('');
+
+        document.getElementById('rxDate').value = new Date().toISOString().split('T')[0];
+
+        await loadDoctorAppointments();
+        await loadDoctorPrescriptions();
+      } catch (err) {
+        console.error('Initialization error:', err);
+      }
+    }
+
+    async function loadDoctorAppointments() {
+      const tbody = document.getElementById('docApptsTableBody');
+      try {
+        if (!currentDoctor) return;
+        doctorAppointments = await API.getDoctorAppointments(currentDoctor.id);
+
+        let pending = 0, confirmed = 0, completed = 0;
+        doctorAppointments.forEach(a => {
+          if (a.status === 'PENDING') pending++;
+          else if (a.status === 'CONFIRMED') confirmed++;
+          else if (a.status === 'COMPLETED') completed++;
+        });
+
+        document.getElementById('docPendingCount').textContent = pending;
+        document.getElementById('docConfirmedCount').textContent = confirmed;
+        document.getElementById('docCompletedCount').textContent = completed;
+
+        if (doctorAppointments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No appointments scheduled for you.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = doctorAppointments.map(a => {
+          const statusClass = a.status === 'CONFIRMED' ? 'badge-confirmed' :
+            a.status === 'COMPLETED' ? 'badge-completed' :
+            a.status === 'CANCELLED' ? 'badge-cancelled' : 'badge-pending';
+
+          return `
+            <tr>
+              <td><span class="badge bg-light text-dark border">#${a.id}</span></td>
+              <td>
+                <div class="fw-bold">${a.patient?.user?.fullName || 'Patient'}</div>
+                <small class="text-muted"><i class="bi bi-droplet-fill text-danger me-1"></i>${a.patient?.bloodGroup || 'Blood: N/A'}</small>
+              </td>
+              <td>
+                <div class="fw-semibold">${formatDate(a.appointmentDate)}</div>
+                <small class="text-muted"><i class="bi bi-clock me-1"></i>${a.appointmentTime}</small>
+              </td>
+              <td class="small" style="max-width: 200px;">
+                <strong>Reason:</strong> ${a.reason || 'N/A'}<br>
+                ${a.symptoms ? `<span class="text-muted">Symptoms: ${a.symptoms}</span>` : ''}
+              </td>
+              <td><span class="badge-status ${statusClass}">${a.status}</span></td>
+              <td class="small text-muted">${a.doctorNotes || 'None'}</td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  ${a.status === 'PENDING' ? `
+                    <button onclick="updateStatus(${a.id}, 'CONFIRMED')" class="btn btn-outline-success" title="Confirm">
+                      <i class="bi bi-check2"></i> Confirm
+                    </button>
+                  ` : ''}
+                  ${a.status === 'CONFIRMED' ? `
+                    <button onclick="openRxModalForAppt(${a.id}, ${a.patient?.id})" class="btn btn-primary" title="Write Prescription">
+                      <i class="bi bi-file-earmark-medical me-1"></i> Prescribe
+                    </button>
+                    <button onclick="updateStatus(${a.id}, 'COMPLETED')" class="btn btn-outline-primary ms-1" title="Mark Done">
+                      <i class="bi bi-check2-all"></i>
+                    </button>
+                  ` : ''}
+                  ${a.status === 'COMPLETED' ? `
+                    <span class="text-success small fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>
+                  ` : ''}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadDoctorPrescriptions() {
+      const tbody = document.getElementById('docPrescriptionsTableBody');
+      try {
+        if (!currentDoctor) return;
+        const myRx = await API.getDoctorPrescriptions(currentDoctor.id);
+
+        if (myRx.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No prescriptions issued yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = myRx.map(rx => `
+          <tr>
+            <td><span class="badge bg-light text-primary border">Rx #${rx.id}</span></td>
+            <td><strong>${rx.patient?.user?.fullName || 'Patient'}</strong></td>
+            <td>${formatDate(rx.prescribedDate)}</td>
+            <td class="fw-semibold text-dark">${rx.diagnosis}</td>
+            <td class="small" style="white-space: pre-line; max-width: 250px;">${rx.medicines}</td>
+            <td class="small text-muted">${rx.instructions || 'Standard care'}</td>
+            <td>
+              <button onclick="viewRxDetail(${rx.id})" class="btn btn-sm btn-outline-primary py-0 px-2">
+                <i class="bi bi-eye me-1"></i> View / Print
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function updateStatus(id, status) {
+      let notes = '';
+      if (status === 'COMPLETED') {
+        notes = prompt('Add consultation / outcome notes (optional):', 'Consultation successfully concluded.');
+      }
+      try {
+        await API.updateAppointmentStatus(id, status, notes);
+        showToast(`Appointment status updated to ${status}`, 'success');
+        loadDoctorAppointments();
+      } catch (e) {
+        showToast(e.message, 'danger');
+      }
+    }
+
+    function openNewPrescriptionModal() {
+      document.getElementById('prescriptionForm').reset();
+      document.getElementById('rxApptId').value = '';
+      document.getElementById('rxDate').value = new Date().toISOString().split('T')[0];
+      new bootstrap.Modal(document.getElementById('addPrescriptionModal')).show();
+    }
+
+    function openRxModalForAppt(apptId, patientId) {
+      document.getElementById('prescriptionForm').reset();
+      document.getElementById('rxApptId').value = apptId;
+      document.getElementById('rxPatientSelect').value = patientId;
+      document.getElementById('rxDate').value = new Date().toISOString().split('T')[0];
+      new bootstrap.Modal(document.getElementById('addPrescriptionModal')).show();
+    }
+
+    document.getElementById('prescriptionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const apptId = document.getElementById('rxApptId').value ? parseInt(document.getElementById('rxApptId').value) : null;
+        const patientId = parseInt(document.getElementById('rxPatientSelect').value);
+        const diagnosis = document.getElementById('rxDiagnosis').value;
+        const medicines = document.getElementById('rxMedicines').value;
+        const instructions = document.getElementById('rxInstructions').value;
+        const prescribedDate = document.getElementById('rxDate').value;
+
+        await API.createPrescription({
+          appointmentId: apptId,
+          doctorId: currentDoctor.id,
+          patientId: patientId,
+          diagnosis: diagnosis,
+          medicines: medicines,
+          instructions: instructions,
+          prescribedDate: prescribedDate
+        });
+
+        if (apptId) {
+          await API.updateAppointmentStatus(apptId, 'COMPLETED', `Prescription issued for ${diagnosis}`);
+        }
+
+        showToast('Prescription issued successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addPrescriptionModal')).hide();
+        loadDoctorAppointments();
+        loadDoctorPrescriptions();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
+
+    async function viewRxDetail(rxId) {
+      try {
+        const myRx = await API.getDoctorPrescriptions(currentDoctor.id);
+        const rx = myRx.find(r => r.id === rxId);
+        if (!rx) return;
+
+        const body = document.getElementById('viewRxBody');
+        body.innerHTML = `
+          <div class="border-bottom pb-3 mb-3 text-center">
+            <h4 class="fw-bold text-primary mb-0"><i class="bi bi-hospital me-2"></i>CarePulse Hospital</h4>
+            <div class="small text-muted">100 Health Sciences Blvd • Emergency: +1 (800) 555-CARE</div>
+          </div>
+          <div class="d-flex justify-content-between mb-3 small">
+            <div>
+              <strong>Doctor:</strong> ${rx.doctor?.user?.fullName || 'Physician'}<br>
+              <span class="text-muted">${rx.doctor?.specialization || ''}</span>
+            </div>
+            <div class="text-end">
+              <strong>Rx Date:</strong> ${formatDate(rx.prescribedDate)}<br>
+              <span class="badge bg-light text-dark border">Prescription #${rx.id}</span>
+            </div>
+          </div>
+          <div class="p-2 bg-light rounded-3 mb-3 small">
+            <strong>Patient Name:</strong> ${rx.patient?.user?.fullName || 'Patient'} | 
+            <strong>Blood Group:</strong> ${rx.patient?.bloodGroup || 'N/A'}
+          </div>
+          <div class="mb-3">
+            <h6 class="fw-bold text-dark mb-1">Diagnosis:</h6>
+            <div class="p-2 bg-light border rounded small">${rx.diagnosis}</div>
+          </div>
+          <div class="mb-3">
+            <h6 class="fw-bold text-dark mb-1">Medications (Rx):</h6>
+            <div class="p-3 bg-light border rounded small font-monospace" style="white-space: pre-line;">${rx.medicines}</div>
+          </div>
+          <div class="mb-3">
+            <h6 class="fw-bold text-dark mb-1">Doctor's Instructions:</h6>
+            <div class="small text-muted">${rx.instructions || 'Follow dosages as indicated.'}</div>
+          </div>
+          <div class="text-end pt-4 mt-3 border-top small">
+            <div class="fw-bold">${rx.doctor?.user?.fullName || 'Doctor'}</div>
+            <div class="text-muted" style="font-size: 0.75rem;">Digital Signature Authorized</div>
+          </div>
+        `;
+
+        new bootstrap.Modal(document.getElementById('viewRxModal')).show();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initDoctorDashboard);
+  </script>
+</body>
+</html>

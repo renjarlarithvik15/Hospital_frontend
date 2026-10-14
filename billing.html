@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing & Invoices | CarePulse Hospital</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-2 px-3">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center text-white" href="billing.html">
+        <span class="brand-icon"><i class="bi bi-hospital"></i></span>
+        <span>CarePulse <span class="badge bg-primary fs-6 ms-2">Billing & Accounting</span></span>
+      </a>
+
+      <div class="d-flex align-items-center ms-auto">
+        <a href="admin-dashboard.html" class="btn btn-outline-light btn-sm me-2">
+          <i class="bi bi-speedometer2 me-1"></i> Admin Portal
+        </a>
+        <button onclick="API.logout()" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right me-1"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="fw-bold mb-1">Hospital Billing & Invoicing Desk</h3>
+        <p class="text-muted small mb-0">Generate clinical invoices, manage itemized medical costs, and record payments</p>
+      </div>
+      <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateBillModal">
+          <i class="bi bi-receipt me-1"></i> Generate New Invoice
+        </button>
+      </div>
+    </div>
+
+    <!-- Financial Summary Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card">
+          <span class="text-muted small fw-semibold">Total Revenue Collected</span>
+          <h3 class="fw-bold my-1 text-success" id="billingTotalRevenue">$0.00</h3>
+          <small class="text-muted">Cleared patient payments</small>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <span class="text-muted small fw-semibold">Pending Balances</span>
+          <h3 class="fw-bold my-1 text-danger" id="billingPendingBalance">$0.00</h3>
+          <small class="text-muted">Outstanding invoices</small>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <span class="text-muted small fw-semibold">Invoices Generated</span>
+          <h3 class="fw-bold my-1 text-primary" id="billingInvoiceCount">0</h3>
+          <small class="text-muted">Total billing transactions</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table of Invoices -->
+    <div class="table-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">All Clinical Invoices</h5>
+        <button onclick="loadBillsData()" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Patient</th>
+              <th>Date</th>
+              <th>Breakdown</th>
+              <th>Total Amount</th>
+              <th>Paid</th>
+              <th>Balance</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoicesTableBody">
+            <tr><td colspan="9" class="text-center text-muted py-4">Loading invoices...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Generate Bill -->
+  <div class="modal fade" id="generateBillModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="genBillForm">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">
+              <i class="bi bi-receipt text-primary me-2"></i> Generate Patient Hospital Bill
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Select Patient *</label>
+                <select class="form-select" id="billPatientSelect" required>
+                  <option value="">Choose Patient...</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Invoice Date *</label>
+                <input type="date" class="form-control" id="billDate" required>
+              </div>
+            </div>
+
+            <!-- Itemized Costs -->
+            <h6 class="fw-bold text-primary mb-2 mt-4"><i class="bi bi-calculator me-1"></i> Itemized Clinical Charges ($)</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Consultation Fee ($)</label>
+                <input type="number" step="0.01" class="form-control calc-item" id="billConsult" value="100.00" oninput="calculateTotal()">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Pharmacy & Medicines ($)</label>
+                <input type="number" step="0.01" class="form-control calc-item" id="billMeds" value="0.00" oninput="calculateTotal()">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Laboratory / Diagnostic ($)</label>
+                <input type="number" step="0.01" class="form-control calc-item" id="billLab" value="0.00" oninput="calculateTotal()">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Room / Ward Charges ($)</label>
+                <input type="number" step="0.01" class="form-control calc-item" id="billRoom" value="0.00" oninput="calculateTotal()">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Other Hospital Services ($)</label>
+                <input type="number" step="0.01" class="form-control calc-item" id="billOther" value="0.00" oninput="calculateTotal()">
+              </div>
+            </div>
+
+            <div class="p-3 bg-light rounded-3 mb-3 border">
+              <div class="row align-items-center">
+                <div class="col-6">
+                  <span class="text-muted small">Calculated Total Amount:</span>
+                  <div class="fs-4 fw-bold text-primary" id="calcTotalDisplay">$100.00</div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-semibold">Initial Payment Received ($)</label>
+                  <input type="number" step="0.01" class="form-control" id="billInitialPaid" value="0.00">
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Payment Method</label>
+                <select class="form-select" id="billPayMethod">
+                  <option value="CASH">Cash</option>
+                  <option value="CARD">Credit / Debit Card</option>
+                  <option value="UPI">UPI / Digital Payment</option>
+                  <option value="ONLINE">Online Net Banking</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Remarks / Billing Notes</label>
+                <input type="text" class="form-control" id="billNotes" placeholder="e.g. Outpatient consultation & vitals check">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary fw-semibold px-4">Generate & Save Invoice</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Record Payment -->
+  <div class="modal fade" id="recordPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="recordPaymentForm">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Record Invoice Payment</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="recBillId">
+            <div class="p-3 bg-light rounded-3 mb-3 text-center">
+              <div class="small text-muted">Invoice: <strong id="recBillNum"></strong></div>
+              <div class="small text-muted mt-1">Pending Balance:</div>
+              <h3 class="fw-bold text-danger my-1" id="recBalanceDisplay">$0.00</h3>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Payment Amount to Credit ($) *</label>
+              <input type="number" step="0.01" class="form-control" id="recPayAmount" required min="1">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Payment Method *</label>
+              <select class="form-select" id="recPayMethod" required>
+                <option value="CASH">Cash at Desk</option>
+                <option value="CARD">Credit / Debit Card</option>
+                <option value="UPI">UPI Payment</option>
+                <option value="ONLINE">Online Transfer</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success fw-semibold">Submit Payment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Printable Invoice -->
+  <div class="modal fade" id="printInvoiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header no-print">
+          <h5 class="modal-title fw-bold">Clinical Invoice & Receipt</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body printable-area p-4" id="printInvoiceBody">
+          <!-- Dynamic Invoice Render -->
+        </div>
+        <div class="modal-footer no-print">
+          <button type="button" onclick="window.print()" class="btn btn-primary">
+            <i class="bi bi-printer me-1"></i> Print Invoice
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    API.checkAuth(['ROLE_ADMIN', 'ROLE_STAFF']);
+
+    let allBillsList = [];
+    let patientsList = [];
+
+    async function loadBillsData() {
+      try {
+        allBillsList = await API.getBills();
+        patientsList = await API.getPatients();
+
+        // Populate patient dropdown
+        const patSelect = document.getElementById('billPatientSelect');
+        patSelect.innerHTML = '<option value="">Choose Patient...</option>' +
+          patientsList.map(p => `<option value="${p.id}">${p.fullName || p.username} (ID: #${p.id})</option>`).join('');
+
+        document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+
+        // Metrics
+        let totalRevenue = 0;
+        let pendingBal = 0;
+        allBillsList.forEach(b => {
+          totalRevenue += (b.paidAmount || 0);
+          pendingBal += (b.balanceAmount || 0);
+        });
+
+        document.getElementById('billingTotalRevenue').textContent = formatCurrency(totalRevenue);
+        document.getElementById('billingPendingBalance').textContent = formatCurrency(pendingBal);
+        document.getElementById('billingInvoiceCount').textContent = allBillsList.length;
+
+        const tbody = document.getElementById('invoicesTableBody');
+        if (allBillsList.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No billing invoices found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = allBillsList.map(b => {
+          const statusBadge = b.paymentStatus === 'PAID' ? 'badge-paid' :
+            b.paymentStatus === 'PARTIALLY_PAID' ? 'badge-partially-paid' : 'badge-pending';
+
+          const hasDue = b.balanceAmount > 0;
+
+          return `
+            <tr>
+              <td><span class="badge bg-light text-primary border">${b.billNumber}</span></td>
+              <td>
+                <div class="fw-bold">${b.patient?.user?.fullName || 'Patient'}</div>
+                <small class="text-muted">ID: #${b.patient?.id}</small>
+              </td>
+              <td>${formatDate(b.billDate)}</td>
+              <td class="small text-muted">
+                Consult: $${b.consultationFee || 0} | Meds: $${b.medicationFee || 0} | Lab: $${b.labCharges || 0}
+              </td>
+              <td class="fw-bold text-dark">${formatCurrency(b.totalAmount)}</td>
+              <td class="text-success fw-semibold">${formatCurrency(b.paidAmount)}</td>
+              <td class="text-danger fw-semibold">${formatCurrency(b.balanceAmount)}</td>
+              <td><span class="badge-status ${statusBadge}">${b.paymentStatus}</span></td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  ${hasDue ? `
+                    <button onclick="openRecordPayment(${b.id}, '${b.billNumber}', ${b.balanceAmount})" class="btn btn-outline-success py-0 px-2">
+                      <i class="bi bi-cash me-1"></i> Pay
+                    </button>
+                  ` : ''}
+                  <button onclick="openPrintInvoice(${b.id})" class="btn btn-outline-primary py-0 px-2 ms-1">
+                    <i class="bi bi-printer me-1"></i> Print
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function calculateTotal() {
+      const c = parseFloat(document.getElementById('billConsult').value || 0);
+      const m = parseFloat(document.getElementById('billMeds').value || 0);
+      const l = parseFloat(document.getElementById('billLab').value || 0);
+      const r = parseFloat(document.getElementById('billRoom').value || 0);
+      const o = parseFloat(document.getElementById('billOther').value || 0);
+      const total = c + m + l + r + o;
+      document.getElementById('calcTotalDisplay').textContent = formatCurrency(total);
+    }
+
+    document.getElementById('genBillForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const patientId = parseInt(document.getElementById('billPatientSelect').value);
+        const billDate = document.getElementById('billDate').value;
+        const consult = parseFloat(document.getElementById('billConsult').value || 0);
+        const meds = parseFloat(document.getElementById('billMeds').value || 0);
+        const lab = parseFloat(document.getElementById('billLab').value || 0);
+        const room = parseFloat(document.getElementById('billRoom').value || 0);
+        const other = parseFloat(document.getElementById('billOther').value || 0);
+        const initialPaid = parseFloat(document.getElementById('billInitialPaid').value || 0);
+        const method = document.getElementById('billPayMethod').value;
+        const notes = document.getElementById('billNotes').value;
+
+        await API.generateBill({
+          patientId: patientId,
+          billDate: billDate,
+          consultationFee: consult,
+          medicationFee: meds,
+          labCharges: lab,
+          roomCharges: room,
+          otherCharges: other,
+          paidAmount: initialPaid,
+          paymentMethod: method,
+          notes: notes
+        });
+
+        showToast('Hospital bill successfully generated!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('generateBillModal')).hide();
+        document.getElementById('genBillForm').reset();
+        loadBillsData();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
+
+    function openRecordPayment(id, num, bal) {
+      document.getElementById('recBillId').value = id;
+      document.getElementById('recBillNum').textContent = num;
+      document.getElementById('recBalanceDisplay').textContent = formatCurrency(bal);
+      document.getElementById('recPayAmount').value = bal;
+      document.getElementById('recPayAmount').max = bal;
+      new bootstrap.Modal(document.getElementById('recordPaymentModal')).show();
+    }
+
+    document.getElementById('recordPaymentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const id = parseInt(document.getElementById('recBillId').value);
+        const amt = parseFloat(document.getElementById('recPayAmount').value);
+        const method = document.getElementById('recPayMethod').value;
+
+        await API.recordPayment(id, amt, method);
+        showToast(`Payment of ${formatCurrency(amt)} recorded successfully!`, 'success');
+        bootstrap.Modal.getInstance(document.getElementById('recordPaymentModal')).hide();
+        loadBillsData();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
+
+    function openPrintInvoice(billId) {
+      const bill = allBillsList.find(b => b.id === billId);
+      if (!bill) return;
+
+      const body = document.getElementById('printInvoiceBody');
+      body.innerHTML = `
+        <div class="row align-items-center border-bottom pb-4 mb-4">
+          <div class="col-6">
+            <h3 class="fw-bold text-primary mb-1"><i class="bi bi-hospital me-2"></i>CarePulse Hospital</h3>
+            <p class="text-muted small mb-0">100 Health Sciences Blvd, Medical District<br>Phone: +1 (800) 555-CARE | billing@carepulse.hospital</p>
+          </div>
+          <div class="col-6 text-end">
+            <h4 class="fw-bold text-dark mb-1">INVOICE</h4>
+            <div class="badge bg-light text-primary border fs-6 mb-1">${bill.billNumber}</div>
+            <div class="small text-muted">Date: ${formatDate(bill.billDate)}</div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-6">
+            <h6 class="text-uppercase text-muted fw-bold small">Billed To:</h6>
+            <h5 class="fw-bold mb-1">${bill.patient?.user?.fullName || 'Patient'}</h5>
+            <div class="small text-muted">Patient ID: #${bill.patient?.id}</div>
+            <div class="small text-muted">${bill.patient?.address || 'Springfield, USA'}</div>
+            <div class="small text-muted">Phone: ${bill.patient?.user?.phone || 'N/A'}</div>
+          </div>
+          <div class="col-6 text-end">
+            <h6 class="text-uppercase text-muted fw-bold small">Payment Status:</h6>
+            <span class="badge ${bill.paymentStatus === 'PAID' ? 'bg-success' : 'bg-warning text-dark'} fs-6">${bill.paymentStatus}</span>
+            <div class="small text-muted mt-2">Method: ${bill.paymentMethod || 'Desk Payment'}</div>
+          </div>
+        </div>
+
+        <table class="table table-bordered mb-4">
+          <thead class="table-light">
+            <tr>
+              <th>Description of Clinical Service</th>
+              <th class="text-end" style="width: 140px;">Amount ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Physician Consultation Fee</td>
+              <td class="text-end">${formatCurrency(bill.consultationFee)}</td>
+            </tr>
+            <tr>
+              <td>Pharmacy / Prescribed Medications</td>
+              <td class="text-end">${formatCurrency(bill.medicationFee)}</td>
+            </tr>
+            <tr>
+              <td>Laboratory & Diagnostic Tests (ECG, Vitals)</td>
+              <td class="text-end">${formatCurrency(bill.labCharges)}</td>
+            </tr>
+            <tr>
+              <td>Room / Ward Charges</td>
+              <td class="text-end">${formatCurrency(bill.roomCharges)}</td>
+            </tr>
+            <tr>
+              <td>Other Hospital Facilities</td>
+              <td class="text-end">${formatCurrency(bill.otherCharges)}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th class="text-end">Total Charges:</th>
+              <th class="text-end fs-5 text-dark">${formatCurrency(bill.totalAmount)}</th>
+            </tr>
+            <tr>
+              <th class="text-end text-success">Total Amount Paid:</th>
+              <th class="text-end text-success fs-5">${formatCurrency(bill.paidAmount)}</th>
+            </tr>
+            <tr class="table-light">
+              <th class="text-end text-danger">Net Balance Due:</th>
+              <th class="text-end text-danger fs-5">${formatCurrency(bill.balanceAmount)}</th>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="border rounded p-3 bg-light small mb-4">
+          <strong>Billing Remarks:</strong> ${bill.notes || 'Routine consultation and pharmacy charges.'}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-end pt-4 border-top">
+          <div class="small text-muted">Thank you for trusting CarePulse Hospital with your health.</div>
+          <div class="text-center">
+            <div class="fw-bold border-bottom pb-1" style="min-width: 160px;">Hospital Accounts</div>
+            <div class="small text-muted">Authorized Signature</div>
+          </div>
+        </div>
+      `;
+
+      new bootstrap.Modal(document.getElementById('printInvoiceModal')).show();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadBillsData);
+  </script>
+</body>
+</html>
